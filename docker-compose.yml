@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: cdn_db
+
+  s3-mock:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+
+  app-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://user:pass@db:5432/cdn_db
+      AWS_ACCESS_KEY: minioadmin
+      AWS_SECRET_KEY: minioadmin
+      AWS_REGION: us-east-1
+      S3_BUCKET_NAME: my-cdn-bucket
+      S3_ENDPOINT_URL: http://s3-mock:9000
+    depends_on:
+      - db
+      - s3-mock

@@ -1,0 +1,8 @@
+setup:
+  - command: "pip install -r requirements.txt"
+  - command: "docker-compose build"
+test:
+  - command: "docker-compose up -d"
+  - command: "docker-compose exec -T app-service pytest"
+benchmark:
+  - command: "docker-compose exec -T app-service python //code/app/scripts/benchmark.py"
