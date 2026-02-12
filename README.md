@@ -19,8 +19,8 @@ The core objective of this project is to implement an intelligent "Edge-logic" l
 ### 1. Repository Setup
 Clone the repository and navigate to the project root:
 ```bash
-git clone <YOUR_GIT_REPOSITORY_URL>
-cd cdn-project
+git clone https://github.com/saiyasaswi-685/cdn_project
+cd cdn_project
 
 ```
 
