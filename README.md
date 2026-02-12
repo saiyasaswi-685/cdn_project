@@ -1,70 +1,216 @@
+# 🚀 Pro CDN – High-Performance Content Delivery API
 
-```markdown
-# Pro CDN: High-Performance Content Delivery API
+> A production-ready Content Delivery API designed to optimize asset distribution, reduce origin server load, and implement intelligent edge-logic.
 
-## 📌 Project Overview
-Pro CDN is a specialized Content Delivery API designed to optimize asset distribution and reduce origin server load. Built with **FastAPI**, **PostgreSQL**, and **S3-Compatible Storage (MinIO)**, the system focuses on high-speed metadata retrieval and efficient caching mechanisms.
+---
 
-The core objective of this project is to implement an intelligent "Edge-logic" layer that handles conditional requests, asset versioning, and private content security.
+## 📌 Overview
+
+**Pro CDN** is a high-performance Content Delivery API built using **FastAPI**, **PostgreSQL**, and **S3-Compatible Storage (MinIO)**.
+
+The system focuses on:
+
+- ⚡ High-speed metadata retrieval  
+- 📦 Efficient caching mechanisms  
+- 🔐 Secure private content handling  
+- 🧠 Intelligent edge-logic processing  
+- 🏷️ Asset versioning & conditional requests  
+
+The core objective of this project is to implement an advanced **Edge Logic Layer** that handles:
+
+- Conditional HTTP requests (`If-None-Match`)
+- Asset version control
+- ETag-based validation
+- Secure private asset caching policies
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+Client → FastAPI (Edge Logic Layer) → PostgreSQL (Metadata)
+                                   → MinIO (Object Storage)
+```
+
+### Flow Summary
+
+1. Client requests asset  
+2. FastAPI checks metadata (PostgreSQL)  
+3. Validates ETag (SHA-256)  
+4. If unchanged → Returns `304 Not Modified`  
+5. If modified → Fetches from MinIO & returns updated content  
+
+---
 
 ## 🛠️ Tech Stack
-* **Framework:** FastAPI (Python 3.9+)
-* **Database:** PostgreSQL (Relational metadata & version tracking)
-* **Object Storage:** MinIO (S3-compatible storage mock)
-* **Containerization:** Docker & Docker Compose
-* **Hashing:** SHA-256 for ETag generation
+
+| Component        | Technology Used |
+|------------------|-----------------|
+| Backend API      | FastAPI (Python 3.9+) |
+| Database         | PostgreSQL |
+| Object Storage   | MinIO (S3-compatible) |
+| Containerization | Docker & Docker Compose |
+| Hashing          | SHA-256 (ETag generation) |
+
+---
+
+## 📂 Project Structure
+
+```
+cdn_project/
+│
+├── app/
+│   ├── api/                # API route definitions
+│   ├── core/               # Configuration & settings
+│   ├── models/             # Database models
+│   ├── services/           # Business logic layer
+│   ├── scripts/            # Benchmark & utility scripts
+│   └── main.py             # FastAPI entry point
+│
+├── docker-compose.yml      # Multi-container setup
+├── Dockerfile              # App container configuration
+├── requirements.txt        # Python dependencies
+└── README.md               # Project documentation
+```
+
+---
 
 ## 🚀 Getting Started
 
-### 1. Repository Setup
-Clone the repository and navigate to the project root:
+### 1️⃣ Clone Repository
+
 ```bash
 git clone https://github.com/saiyasaswi-685/cdn_project
 cd cdn_project
-
 ```
 
-### 2. Environment Configuration
+---
 
-The project is pre-configured to work out of the box using Docker. The following environment variables are managed within `docker-compose.yml`:
+### 2️⃣ Run Using Docker
 
-* **S3_ENDPOINT_URL**: Connection for the object storage.
-* **DATABASE_URL**: Connection for the metadata database.
-* **AWS_ACCESS_KEY / AWS_SECRET_KEY**: Credentials for S3 access.
-
-### 3. Deployment
-
-Launch the entire infrastructure using a single command:
+The project is fully containerized.
 
 ```bash
 docker-compose up --build -d
-
 ```
 
-*The API will be available at `http://localhost:8000`.*
+This will start:
 
-### 4. Running the Performance Benchmark
+- FastAPI App Service  
+- PostgreSQL Database  
+- MinIO Object Storage  
 
-To verify the caching efficiency and the 100% Cache Hit Ratio, execute the following:
-
-```bash
-docker-compose exec app-service python //code/app/scripts/benchmark.py
+API will be available at:
 
 ```
+http://localhost:8000
+```
+
+---
+
+### 3️⃣ Environment Variables
+
+Configured inside `docker-compose.yml`:
+
+| Variable | Description |
+|----------|------------|
+| S3_ENDPOINT_URL | Object storage connection |
+| DATABASE_URL | PostgreSQL connection string |
+| AWS_ACCESS_KEY | S3 access key |
+| AWS_SECRET_KEY | S3 secret key |
+
+If running locally without Docker, define these variables in a `.env` file.
+
+---
 
 ## 📖 API Documentation
 
-Once the services are running, you can access the interactive API documentation:
+After startup:
 
-* **Swagger UI**: [http://localhost:8000/docs](https://www.google.com/search?q=http://localhost:8000/docs)
-* **ReDoc**: [http://localhost:8000/redoc](https://www.google.com/search?q=http://localhost:8000/redoc)
+- Swagger UI → `http://localhost:8000/docs`
+- ReDoc → `http://localhost:8000/redoc`
 
-## 🎯 Key Functionalities
+You can also export the OpenAPI specification using:
 
-* **Asset Upload**: Generates a unique SHA-256 hash (ETag) based on file content.
-* **Conditional Downloads**: Utilizes `If-None-Match` headers to serve `304 Not Modified` responses, saving bandwidth.
-* **Private Assets**: Implements `Cache-Control: private` to ensure sensitive data is not stored on public edge servers.
-* **Versioning**: Allows publishing specific versions of assets for historical tracking.
-
+```bash
+curl http://localhost:8000/openapi.json -o openapi.json
 ```
 
+---
+
+## 🎯 Core Features
+
+### 📦 Asset Upload
+- Generates SHA-256 hash
+- Stores hash as ETag
+- Saves metadata in PostgreSQL
+
+---
+
+### 🔁 Conditional Downloads
+- Supports `If-None-Match`
+- Returns `304 Not Modified`
+- Reduces bandwidth usage
+
+---
+
+### 🔐 Private Asset Handling
+- Uses `Cache-Control: private`
+- Prevents public CDN caching
+- Requires authentication token
+
+---
+
+### 🏷️ Asset Versioning
+- Supports publishing specific versions
+- Maintains version history in database
+- Enables historical asset retrieval
+
+---
+
+## 📊 Performance Benchmark
+
+Run benchmark script:
+
+```bash
+docker-compose exec app-service python /code/app/scripts/benchmark.py
+```
+
+Benchmark validates:
+
+- Cache hit ratio
+- Average response latency
+- CDN vs Origin traffic distribution
+
+---
+
+## 🔒 Security Highlights
+
+- SHA-256 content hashing for ETag
+- Token-based access validation for private content
+- Controlled caching policies
+- Environment-based credential management
+- Docker-isolated services
+
+---
+
+## 🧪 Future Improvements
+
+- Redis-based edge metadata caching
+- Rate limiting & throttling
+- Cloud deployment (AWS / GCP)
+- CI/CD integration
+- CDN invalidation API
+- Signed URL support for temporary access
+
+---
+
+## 👨‍💻 Author
+
+Developed by **Sai Yasaswi**
+
+---
+
+## 📜 License
+
+This project is intended for educational and demonstration purposes.
